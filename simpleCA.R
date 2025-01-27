@@ -1,7 +1,6 @@
 # Make a simple cellular automata to show how dispersal causes pattern 
 # from a random start
 rm(list=ls())
-setwd("~/Documents/teaching/AY2018_2019/ESCI435/w04_dist/")
 # set grid dimensions
 n <- 100
 nCells <- n*n
