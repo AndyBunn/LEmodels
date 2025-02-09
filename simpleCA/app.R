@@ -13,7 +13,7 @@
 list_of_packages = c("shiny","shinyjs","truncnorm","tidyverse",
                      "scales","ambient","gganimate","cowplot","shinythemes",
                      "shinyWidgets","terra","tidyterra","sf","ggnewscale",
-                     "prettyunits","gifski")
+                     "prettyunits","gifski","shinyBS","markdown")
 
 lapply(list_of_packages, 
        function(x) if(!require(x,character.only = TRUE)) install.packages(x))
@@ -21,6 +21,7 @@ lapply(list_of_packages,
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
+library(markdown)
 library(truncnorm)
 library(tidyverse)
 library(scales)
@@ -34,6 +35,7 @@ library(cowplot)
 library(shinythemes)
 library(prettyunits)
 library(gifski)
+library(shinyBS)
 
 addResourcePath(prefix = "www", directoryPath = "www")
 addResourcePath(prefix = "videos", directoryPath = "www")
@@ -62,13 +64,59 @@ ui <- fluidPage(
       )
     )
   ),
-  tags$style(type="text/css",
-             ".recalculating {opacity: 1.0;}"
-  ),
-  titlePanel("Simple Cellular Automata"),
+  # tags$style(type="text/css",
+  #            ".recalculating {opacity: 1.0;}"
+  # ),
+  #### Modals for help ####
+  
+  bsModal(id = "aboutModal",
+          title = "About",
+          trigger = "about",
+          size = "medium",
+          includeMarkdown("text_intro.rmd")),
+  
+  bsModal(id = "animModal",
+          title = "Animation",
+          trigger = "animHelp",
+          size = "medium",
+          includeMarkdown("anim_help.rmd")),
+  
+  bsModal(id = "ptModal",
+          title = "Adjust the Environmtenal Graient",
+          trigger = "ptHelp",
+          size = "medium",
+          includeMarkdown("pt_help.rmd")),
+  
+  bsModal(id = "nicheModal",
+          title = "Adjust the Niches",
+          trigger = "nicheHelp",
+          size = "medium",
+          includeMarkdown("niche_help.rmd")),
+  
+  bsModal(id = "dispersalModal",
+          title = "Adjust Dispersal",
+          trigger = "dispersalHelp",
+          size = "medium",
+          includeMarkdown("demographics_help.rmd")),
+  
+  bsModal(id = "demographicsModal",
+          title = "Adjust Demographics",
+          trigger = "demographicsHelp",
+          size = "medium",
+          includeMarkdown("demographics_help.rmd")),
+  
+  bsModal(id = "runModal",
+          title = "Run",
+          trigger = "runHelp",
+          size = "medium",
+          includeMarkdown("run_help.rmd")),
+  #### sidebar ####
   sidebarLayout(
     sidebarPanel(width = 4, 
-                 h4("Physical Template",align = "center"),
+                 div(style="display: inline-block;",tags$h4("Physical Template")),
+                 actionButton(inputId = "ptHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
+                 
+                 
                  fluidRow(
                    sliderInput(inputId = "n", 
                                label="Number of Rows/Columns",
@@ -80,7 +128,7 @@ ui <- fluidPage(
                           sliderInput(inputId = "noiseFreq",
                                       label="Noise Frequency",
                                       min = 0,
-                                      max = 10,
+                                      max = 50,
                                       value = 5,
                                       step = 0.5)
                    ),
@@ -95,7 +143,9 @@ ui <- fluidPage(
                  ),
                  hr(style = "border-top: 1px solid #000000;"),
                  #### Niches ####
-                 h4("Habitat Suitability",align = "center"),  
+                 div(style="display: inline-block;",tags$h4("Habitat Suitability")),
+                 actionButton(inputId = "nicheHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
+                 
                  fluidRow(
                    column(6,
                           strong("Spp A"), 
@@ -130,7 +180,8 @@ ui <- fluidPage(
                    ),
                  ),
                  hr(style = "border-top: 1px solid #000000;"),
-                 h4("Neighborhood Dispersal",align = "center"),
+                 div(style="display: inline-block;",tags$h4("Neighborhood Dispersal")),
+                 actionButton(inputId = "dispersalHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
                  fluidRow(
                    column(6, 
                           checkboxInput(inputId = "neighborHoodsppA",
@@ -143,9 +194,10 @@ ui <- fluidPage(
                                         value = TRUE)
                    )
                  ),
-                   
+                 
                  hr(style = "border-top: 1px solid #000000;"),
-                 h4("Demographics",align = "center"),
+                 div(style="display: inline-block;",tags$h4("Demographics")),
+                 actionButton(inputId = "demographicsHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
                  fluidRow(
                    column(6, 
                           strong("Spp A"),
@@ -181,7 +233,8 @@ ui <- fluidPage(
                  ),
                  hr(style = "border-top: 1px solid #000000;"),
                  #### Run Model ####
-                 h4("Run model",align = "center"),  
+                 div(style="display: inline-block;",tags$h4("Run")),
+                 actionButton(inputId = "runHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
                  sliderInput(inputId = "nIter",
                              label="Interations",
                              min = 10,
@@ -195,14 +248,20 @@ ui <- fluidPage(
                  #### Gen anim ####
                  conditionalPanel(
                    condition = "output.show_results",
-                   h4("Generate Animation"),
+                   div(style="display: inline-block;",tags$h4("Animation ")),
+                   actionButton(inputId = "animHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
                    uiOutput("getAnimInterval"),
                    uiOutput("getDuration"),
                    actionButton(inputId = "makeAnim",label = "Make Animation")
                  ) # end conditionalPanel
     ), #end sidebarPanel
-    
+    #### main panel ####
     mainPanel(
+      # spacing bugs me
+      # div(style="display: inline-block;",tags$h2("Simple Species Sorting ")),
+      h2("Simple Species Sorting "),
+      actionButton(inputId = "about", label = "About",
+                   icon = icon("circle-info")),
       
       #### Phys temp ####
       fluidRow(
@@ -290,8 +349,8 @@ server <- function(input, output, session) {
     rv$nIter <- input$nIter
     
     # pctSeed
-    rv$pctSeed <- 0.05
-    
+    rv$pctSeedA <- input$pReproB * 2
+    rv$pctSeedB <- input$pReproB * 2
     
   })
   
@@ -482,13 +541,15 @@ server <- function(input, output, session) {
       n <- rv$n
       nIter <- rv$nIter
       nCells <- n^2
-      pctSeed <- rv$pctSeed
+      pctSeedA <- rv$pctSeedA
+      pctSeedB <- rv$pctSeedB
       neighborHoodsppA <- rv$neighborHoodsppA
       neighborHoodsppB <- rv$neighborHoodsppB
       pRanMortA <- rv$pRanMortA
       pRanMortB <- rv$pRanMortB
       pReproA <- rv$pReproA
       pReproB <- rv$pReproB
+      
       #### Set up for run ####
       # Use a matrix for the loop and not the raster object. This is
       # 100s of times faster
@@ -505,7 +566,7 @@ server <- function(input, output, session) {
       # Here is the raster for sppA pres/abs
       matSppA <- matrix(0,ncol=n,nrow=n)
       cells2seedSppA <- sample(x = 1:nCells,
-                               size = nCells * pctSeed,
+                               size = nCells * pctSeedA,
                                replace = FALSE)
       matSppA[cells2seedSppA] <- 2
       
@@ -518,7 +579,7 @@ server <- function(input, output, session) {
       # Here is the raster for sppB pres/abs
       matSppB <- matrix(0,ncol=n,nrow=n)
       cells2seedSppB <- sample(x = 1:nCells,
-                               size = nCells * pctSeed,
+                               size = nCells * pctSeedB,
                                replace = FALSE)
       matSppB[cells2seedSppB] <- 2
       
@@ -529,6 +590,13 @@ server <- function(input, output, session) {
       #### end ####
       
       #### Start sim ####
+      
+      # save iteration 0
+      sppAdf <- data.frame(which(matSppA>0,arr.ind = TRUE),
+                        iteration=0)
+      sppBdf <- data.frame(which(matSppB>0,arr.ind = TRUE),
+                           iteration=0)
+      
       for(k in 1:nIter){
         for(i in 1:n){
           for(j in 1:n){
@@ -549,14 +617,14 @@ server <- function(input, output, session) {
               stork <- runif(n = 1, min = 0, max = 1)
               if(stork < pReproA){
                 if(neighborHoodsppA){
-                # pick a neighbor to disperse to. Queen's rules
-                iNew <- i + sample(c(-1,0,1),1)
-                jNew <- j + sample(c(-1,0,1),1)
-                # check to make sure we aren't off edge of map
-                if(iNew < 1 | iNew >= n) next
-                if(jNew < 1 | jNew >= n) next
-                # and disperse
-                matSppA[iNew,jNew] <- 2
+                  # pick a neighbor to disperse to. Queen's rules
+                  iNew <- i + sample(c(-1,0,1),1)
+                  jNew <- j + sample(c(-1,0,1),1)
+                  # check to make sure we aren't off edge of map
+                  if(iNew < 1 | iNew >= n) next
+                  if(jNew < 1 | jNew >= n) next
+                  # and disperse
+                  matSppA[iNew,jNew] <- 2
                 }
                 else{
                   iNew <- sample(1:n,1)
@@ -600,18 +668,25 @@ server <- function(input, output, session) {
             }
           }
         }
-        # book keeping after demographics this iteration
+        # book keeping after demographics this iteration.
         resArraySppA[,,k] <- matSppA
-        occupiedSppA[k] <- sum(matSppA==1)/nCells # just values of one not all? Or 
-        tmp <- data.frame(which(resArraySppA[,,k]>0,arr.ind = TRUE),
-                          iteration=k)
-        sppAdf <- rbind(sppAdf,tmp)
+        occupiedSppA[k] <- sum(matSppA==1)/nCells # just values of one not all?
+        
+        #guard against TPK
+        if(any(resArraySppA[,,k]>0)){
+          tmp <- data.frame(which(resArraySppA[,,k]>0,arr.ind = TRUE),
+                            iteration=k)
+          sppAdf <- rbind(sppAdf,tmp)
+        }
         
         resArraySppB[,,k] <- matSppB
         occupiedSppB[k] <- sum(matSppB==1)/nCells
-        tmp <- data.frame(which(resArraySppB[,,k]>0,arr.ind = TRUE),
-                          iteration=k)
-        sppBdf <- rbind(sppBdf,tmp)
+        #guard against TPK
+        if(any(resArraySppB[,,k]>0)){
+          tmp <- data.frame(which(resArraySppB[,,k]>0,arr.ind = TRUE),
+                            iteration=k)
+          sppBdf <- rbind(sppBdf,tmp)
+        }
         
         incProgress(1/nIter)
       }
@@ -648,7 +723,7 @@ server <- function(input, output, session) {
     req(getOtherParams())
     sliderInput(inputId = "iter2plot",
                 label="Iteration to plot",
-                min = 1,
+                min = 0,
                 max = rv$nIter,
                 value = rv$nIter,
                 step = 1)
@@ -696,6 +771,7 @@ server <- function(input, output, session) {
     # and get max density for niche so plots are comparable. yuck.
     max_density_values <- pointSF %>%
       group_by(Species, iteration) %>%
+      dplyr::filter(n() > 1) %>% #guard against TPK
       summarise(max_density = max(density(z)$y), .groups = "drop")
     
     maxD <- max(max_density_values$max_density)
@@ -772,86 +848,89 @@ server <- function(input, output, session) {
   observeEvent(input$makeAnim, {
     
     outfile <- tempfile(fileext='.gif')
-      #    runModel()
-      temp_file <- "www/anim.gif"
-      if(file.exists(temp_file)){
-        file.remove("www/anim.gif")
-      }
-      animation_file(temp_file)
-      
-      pointSF <- rv$pointSF
-      physTempRast <- rv$physTempRast
-      
-      animSeq <- c(1,seq(input$animInterval,rv$nIter,by=input$animInterval))
-      
-      filteredPointSF <- pointSF %>% dplyr::filter(iteration %in% animSeq)
-      
-      # See here: https://github.com/thomasp85/gganimate/pull/331
-      # for me bar doesn't increment. b/c update_progress PR not merged?
-      
-      # as per https://shiny.rstudio.com/articles/progress.html#a-more-complex-progress-example
-      # but set max value to pre-determined total frame count
-      progress <- shiny::Progress$new(max = length(animSeq))
-      progress$set(message = "Rendering Go Brrrr...", value = 0)
-      on.exit(progress$close())
-      
-      updateShinyProgress <- function(detail) {    
-        progress$inc(1, detail = detail)
-      }
-      
-      # input
-      plotPhysTemp <- ggplot() +
-        geom_spatraster(data=physTempRast) +
-        scale_fill_terrain_c(name = "Env gradient") +
-        new_scale_fill() +
-        geom_spatraster_contour_filled(data=physTempRast,
-                                       color="white",
-                                       alpha=0.1,
-                                       breaks=seq(0,1,by=0.2)) +
-        scale_fill_terrain_d(guide = "none") +
-        coord_sf(default = TRUE) +
-        theme_void()
-      
-      plotIterationMap <- plotPhysTemp +
-        new_scale_fill() +
-        new_scale_color() +
-        geom_sf(data=filteredPointSF,mapping = aes(fill=Species,shape=Species),
-                alpha = 0.5,
-                size=3) +
-        scale_shape_manual(values = c("A" = 23,
-                                      "B" = 24)) +
-        scale_fill_manual(values = c("A" = "darkred",
-                                     "B" = "darkblue")) +
-        theme(plot.caption = element_text(size = 12))
-      
-      pAnim <- plotIterationMap + 
-        transition_states(iteration) + 
-        labs(caption = "Iteration: {closest_state}") +
-        enter_appear() +
-        exit_disappear()
-      
-      
-      theAmin <- gganimate::animate(
-        plot = pAnim,
-        nframes = length(animSeq),
-        duration = input$tSec,
-        height = 600,
-        width = 600,
-        units = "px",
-        start_pause = 2,
-        end_pause = 2,
-        renderer = gifski_renderer(),
-        update_progress = updateShinyProgress #update_progress doesn't exist see PR above
-      )
-      
-      anim_save(filename = animation_file(),animation = theAmin)
-      
-      output$previewAnim <- renderImage({
-        list(src = animation_file(), contentType = "image/gif")
-      }, deleteFile = FALSE)
-      
-      anim_made(TRUE)  # Set to TRUE when gif is made, shows download button
-      
+    #    runModel()
+    temp_file <- "www/anim.gif"
+    if(file.exists(temp_file)){
+      file.remove("www/anim.gif")
+    }
+    animation_file(temp_file)
+    
+    pointSF <- rv$pointSF
+    physTempRast <- rv$physTempRast
+    
+    animSeq <- c(0,1,seq(input$animInterval,rv$nIter,by=input$animInterval))
+    # make sure it ends on last iter
+    if(animSeq[length(animSeq)] != rv$nIter){
+      animSeq <- c(animSeq,rv$nIter)
+    } 
+    
+    print(animSeq)
+    filteredPointSF <- pointSF %>% dplyr::filter(iteration %in% animSeq)
+    
+    # See here: https://github.com/thomasp85/gganimate/pull/331
+    # for me bar doesn't increment. b/c update_progress PR not merged?
+    
+    # as per https://shiny.rstudio.com/articles/progress.html#a-more-complex-progress-example
+    # but set max value to pre-determined total frame count
+    progress <- shiny::Progress$new(max = length(animSeq))
+    progress$set(message = "Rendering Go Brrrr...", value = 0)
+    on.exit(progress$close())
+    
+    updateShinyProgress <- function(detail) {    
+      progress$inc(1, detail = detail)
+    }
+    
+    # input
+    plotPhysTemp <- ggplot() +
+      geom_spatraster(data=physTempRast) +
+      scale_fill_terrain_c(name = "Env gradient") +
+      new_scale_fill() +
+      geom_spatraster_contour_filled(data=physTempRast,
+                                     color="white",
+                                     alpha=0.1,
+                                     breaks=seq(0,1,by=0.2)) +
+      scale_fill_terrain_d(guide = "none") +
+      coord_sf(default = TRUE) +
+      theme_void()
+    
+    plotIterationMap <- plotPhysTemp +
+      new_scale_fill() +
+      new_scale_color() +
+      geom_sf(data=filteredPointSF,mapping = aes(fill=Species,shape=Species),
+              alpha = 0.5,
+              size=3) +
+      scale_shape_manual(values = c("A" = 23,
+                                    "B" = 24)) +
+      scale_fill_manual(values = c("A" = "darkred",
+                                   "B" = "darkblue")) +
+      theme(plot.caption = element_text(size = 12))
+    
+    pAnim <- plotIterationMap + 
+      transition_states(iteration) + 
+      labs(caption = "Iteration: {closest_state}") +
+      enter_appear() +
+      exit_disappear()
+    
+    
+    theAmin <- gganimate::animate(
+      plot = pAnim,
+      nframes = length(animSeq),
+      duration = input$tSec,
+      height = 600,
+      width = 600,
+      units = "px",
+      renderer = gifski_renderer(),
+      update_progress = updateShinyProgress #update_progress doesn't exist see PR above
+    )
+    
+    anim_save(filename = animation_file(),animation = theAmin)
+    
+    output$previewAnim <- renderImage({
+      list(src = animation_file(), contentType = "image/gif")
+    }, deleteFile = FALSE)
+    
+    anim_made(TRUE)  # Set to TRUE when gif is made, shows download button
+    
     
   })
   output$downloadAnim <- downloadHandler(

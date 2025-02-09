@@ -1,0 +1,2 @@
++ At each iteration a cell occupied with species A or B can probabilistically reproduce or expire according to the values chosen. 
++ If p(mortality) is high, a species can die out. If p(reproduction) is high the resulting plotting is expensive. Think goldilocks for best results.

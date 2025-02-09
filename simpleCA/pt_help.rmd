@@ -1,0 +1,7 @@
++ Set the dimensions of the physical template (aka env gradient). Larger values will produce a smoother surface but increase computation time.
+
++ The surface is always scaled from [0,1]. It includes a trend from the lower left corner to the upper right corner. 
+
++ The surface also includes a random element (Perlin noise via `ambient::noise_perlin`) which can be adjusted for granularity. The generated noise is dynamic and regenerated when the inputs are changed.
+
++ The ratio of trend to noise can be specified.

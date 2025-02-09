@@ -1,0 +1,1 @@
++ If a species reproduces it can either be limited to neighboring cells (Quuen's rules) or disperse anywhere on the map. 

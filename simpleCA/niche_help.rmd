@@ -1,0 +1,1 @@
++ The tolerances for species A and B follow a truncated normal distribution (`truncnorm::dtruncnorm`) scaled from [0,1] with specified means and standard deviations. 

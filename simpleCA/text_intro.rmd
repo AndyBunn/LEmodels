@@ -1,0 +1,23 @@
+## Introduction
+**Simple Species Sorting** is an interactive Shiny application designed to show show how how species arrange themselves on a environmental gradient given simple niches and dispersal rules.
+
+## Simple Species Sorting: Modeling Niches and Dispersal on an Environmental Gradient
+
+This interactive app explores how species distribute themselves along an environmental gradient based on their ecological niches and dispersal rules. While species interactions (e.g., competition or facilitation) play a role in real ecosystems, this model focuses only on species niches and dispersal—the fundamental drivers of species sorting in the absence of biotic interactions (at least for now).
+
+### How the Model Works
+
+1.	Environmental Gradient – The model generates a spatially structured environmental gradient, which could represent factors like elevation, pH, or soil moisture. Users can modify key properties of this gradient to explore different landscape scenarios.
+	
+2.	Species Initialization – Two species (A and B) are randomly distributed across the landscape. Each species has a defined niche, an optimal range along the gradient where it thrives. The user can adjust the suitability of each species to different parts of the gradient.
+	
+3.	Iterative Cellular Automata Model – The simulation proceeds in discrete time steps, with the following processes occurring at each iteration:
+	+	Mortality – Species experience probabilistic mortality based on how well their niche aligns with local conditions. Additional random mortality is also applied.
+	+	Reproduction & Dispersal – If a species survives, it may reproduce. New individuals can disperse randomly across the landscape or locally, colonizing only neighboring cells.
+4.	Model Outputs – When the user runs the simulation, the model generates:
+	+	A spatial map showing the distribution of both species over time.
+	+	Abundance plots tracking species population sizes.
+	+	Realized niche plots, illustrating where species successfully establish along the gradient.
+	+	An animation of the simulation, which users can save.
+
+This app provides an intuitive way to explore how simple ecological rules lead to emergent spatial patterns in species distributions. Future extensions may incorporate species interactions, adding another layer of complexity to the model.

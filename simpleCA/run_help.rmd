@@ -1,0 +1,1 @@
+Select the number of iterations to use. Higher numbers take more computing time. Note that any change to the input parameters causes the model to reinitialize. 
