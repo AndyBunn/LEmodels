@@ -236,7 +236,7 @@ ui <- fluidPage(
                  div(style="display: inline-block;",tags$h4("Run")),
                  actionButton(inputId = "runHelp", label = NULL,icon=icon("circle-info"),style = "padding: 0"),
                  sliderInput(inputId = "nIter",
-                             label="Interations",
+                             label="Iterations",
                              min = 10,
                              max = 200,
                              value = 100,
